@@ -1,34 +1,35 @@
 server:
   port: 9000
 
-logging:
-  level:
-    org.springframework.security: trace
-
 spring:
   application:
     name: spring-authorization-server
-  security:
-    user:
-      name: user
-      password: password
-    oauth2:
-      authorizationserver:
-        client:
-          oidc-client:
-            registration:
-              client-id: "oidc-client"
-              client-secret: "{noop}secret"
-              client-authentication-methods:
-                - "client_secret_basic"
-              authorization-grant-types:
-                - "authorization_code"
-                - "refresh_token"
-              redirect-uris:
-                - "http://localhost:8080/login/oauth2/code/oidc-client"
-              post-logout-redirect-uris:
-                - "http://localhost:8080/"
-              scopes:
-                - "openid"
-                - "profile"
-            require-authorization-consent: true
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/oauth2_authorization_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:fdsa}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        - classpath:db/oauth2-authorization-schema.sql
+        - classpath:db/oauth2-authorization-consent-schema.sql
+#        - classpath:org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql
+#        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
+#        - classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-consent-schema.sql
+
+logging:
+  level:
+    org.springframework.security: INFO
+    org.springframework.jdbc.datasource.init: DEBUG
